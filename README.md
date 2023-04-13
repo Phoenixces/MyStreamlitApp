@@ -1,1 +1,1 @@
-## My Streamlit App for Machine Learning
+## 😄 My Streamlit App for Machine Learning

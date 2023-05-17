@@ -33,23 +33,22 @@ st.set_page_config(
 #Creating the sidebar for navigation
 with st.sidebar:
     selected = option_menu('Water Quality Prdeiction System',
-                            ['WQI',
-                            'Water Quality Classification', 'Real Time Data'],
-                            icons= ['moisture', 'water', 'speedometer2' ],
+                            ['Calculate WQI','Water Quality Classification', 'Real Time Data', 'Graphs'],
+                            icons= ['moisture', 'water', 'speedometer2', 'graph-up'],
                             default_index=2)
     
 
     
-url = "https://sheets.googleapis.com/v4/spreadsheets/16Z2M5jiDQVznFXZkekCR5VkAi1rXbph_VD0GTpi-ZLU/values/Data?alt=json&key=AIzaSyANKDwMwwG_TXuUyRX3JqFgY6ylBPfOc0M";
+url = "https://sheets.googleapis.com/v4/spreadsheets/1lOf32JKNggS7cogzifAt--WAkPfwEfHjd6jx-q8-Nb4/values/Main?alt=json&key=AIzaSyANKDwMwwG_TXuUyRX3JqFgY6ylBPfOc0M";
 data = requests.get(url).json()
 valLen = len(data['values'])
 
-dataset = [data['values'][i]  for i in range(valLen - 101, valLen, 1)]
-df = pd.DataFrame(dataset, columns= ['Date', 'Time', 'Temperature', 'TDS(ppm)', 'pH', 'Turbidity', 'Longitude', 'Latitude'])
+dataset = [data['values'][i]  for i in range(valLen - 90, valLen, 1)]
+df = pd.DataFrame(dataset, columns= ['Date', 'Time', 'Temperature', 'TDS(ppm)', 'Turbidity', 'pH', 'PRESENT IN WATER(Y/N)', 'Latitude', 'Longitude'])
 
-df["Date"] = pd.to_datetime(df["Date"] + " " + df["Time"], format='%d/%m/%Y %H:%M:%S')
+df["Date"] = pd.to_datetime(df["Date"] + " " + df["Time"], format='%m/%d/%Y %H:%M:%S')
 df["Date"] = df['Date'].dt.date
-df = df.sort_values('Date')
+# df = df.sort_values('Date')
 
 df ['pH'] = pd.to_numeric(df['pH'], errors='coerce')
 df ['TDS(ppm)'] = pd.to_numeric(df['TDS(ppm)'], errors='coerce')
@@ -60,7 +59,7 @@ df ['Temperature'] = pd.to_numeric(df['Temperature'], errors='coerce')
 df = df.replace(np.nan, 0, regex=True)
 
 
-to_display = df.drop_duplicates('Date', keep = 'last')
+df.drop_duplicates(subset=['Date', 'Time'], keep='last', inplace=True)
 
 # print("to_display: ", to_display.shape, "DF: ", df.shape)
 # print(to_display)
@@ -72,7 +71,7 @@ placeholder  = st.empty()
 
 with placeholder.container():
     #WQI Prediction
-    if(selected == 'WQI'):
+    if(selected == 'Calculate WQI'):
 
         col1, col2 = st.columns(2, gap = "large")
 
@@ -96,7 +95,7 @@ with placeholder.container():
 
             try:
                 if st.button('Get WQI', 1):
-                    wqi = "Water Quality Index(WQI) for Real-time data is: " + str(regression_model.predict([[df['pH'].iloc[-1], df['TDS(ppm)'].iloc[-1], df['Turbidity'].iloc[-1] , df['Temperature'].iloc[-1]]])).replace(']', '').replace('[', '')
+                    wqi = "Water Quality Index(WQI) for Real-time data is: " + str(regression_model.predict([[df['pH'].iloc[-1], df['TDS(ppm)'].iloc[-1], df['Turbidity'].iloc[-1] , df['Temperature'].iloc[-1]]])).replace(']', '').replace('[', '') + "\n" + "\nWater is " + str(classif_model.predict([[df['pH'].iloc[-1], df['TDS(ppm)'].iloc[-1], df['Turbidity'].iloc[-1] , df['Temperature'].iloc[-1]]])).replace(']', '').replace('[', '')
                 st.success(wqi)
             
             except ValueError as ve:
@@ -126,7 +125,7 @@ with placeholder.container():
 
                 #Creating a button for prediction
                 if st.button('Get WQI', 2):
-                    wqi = "Water Quality Index is: " + str(regression_model.predict([[float(ph), float(tds), float(turbidity), float(temperature)]])).replace(']', '').replace('[', '')
+                    wqi = "Water Quality Index is: " + str(regression_model.predict([[float(ph), float(tds), float(turbidity), float(temperature)]])).replace(']', '').replace('[', '') + "\n" + "\nWater is" + str(classif_model.predict([[df['pH'].iloc[-1], df['TDS(ppm)'].iloc[-1], df['Turbidity'].iloc[-1] , df['Temperature'].iloc[-1]]])).replace(']', '').replace('[', '') 
                 st.success(wqi)
             
             except ValueError as ve:
@@ -208,10 +207,10 @@ with placeholder.container():
     if(selected == 'Real Time Data'):
         #Page Title
         st.header("DashBoard 💻 ")
-        col1, col5, col6 = st.columns([5, 4, 4], gap="large")
+        col1, col2 = st.columns([9, 1])
         with col1:
             st.markdown("#### 💧Current Values")
-            col1, col2, col3, col4 = st.columns([1,1,1,1])
+            col1, col2, col3, col4 = st.columns([1,1,1,1], gap="large")
             with col1:
                 
                 st.metric("pH", value = str(df['pH'].iloc[-1]), delta= str(df['pH'].iloc[-1] - df['pH'].iloc[-2]))
@@ -223,20 +222,28 @@ with placeholder.container():
                 st.metric("Temperature", value = str(df['Temperature'].iloc[-1]), delta= str(df['Temperature'].iloc[-1] - df['Temperature'].iloc[-2]))
             
             st.markdown('#### Detailed Real Time Data')
-            st.dataframe(df, height = 800, width = 600)
+            st.dataframe(df, height = 800, width = 900)
+
+        
+ #----------------------------------------------------------Graphs-----------------------------------------------------------#
+     
+
+    if(selected == 'Graphs'):
+
+        col5, col6 = st.columns([5, 5], gap="large")
 
         with col5:
             st.info("pH Chart")
-            st.line_chart(to_display, x = "Date", y = "pH", width = 200, height = 425 )
+            st.line_chart(df, x = "Date", y = "pH", width = 200, height = 425 )
             st.info("TDS Chart")
-            st.line_chart(to_display, x = "Date", y = "TDS(ppm)", width = 200, height = 425 )
+            st.line_chart(df, x = "Date", y = "TDS(ppm)", width = 200, height = 425 )
         
 
         with col6:
             st.info("Turbidity Chart")
-            st.line_chart(to_display, x = "Date", y = "Turbidity", width = 200, height = 425 )
+            st.line_chart(df, x = "Date", y = "Turbidity", width = 200, height = 425 )
             st.info("Temperature Chart")
-            st.line_chart(to_display, x = "Date", y = "Temperature", width = 200, height = 425 )
+            st.line_chart(df, x = "Date", y = "Temperature", width = 200, height = 425 )
         
     time.sleep(2)
 

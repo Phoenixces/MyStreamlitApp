@@ -33,7 +33,7 @@ st.set_page_config(
 #Creating the sidebar for navigation
 with st.sidebar:
     selected = option_menu('Water Quality Prdeiction System',
-                            ['Calculate WQI','Water Quality Classification', 'Real Time Data', 'Graphs'],
+                            ['Get WQI','Water Quality Classification', 'Real Time Data', 'Graphs'],
                             icons= ['moisture', 'water', 'speedometer2', 'graph-up'],
                             default_index=2)
     
@@ -71,7 +71,7 @@ placeholder  = st.empty()
 
 with placeholder.container():
     #WQI Prediction
-    if(selected == 'Calculate WQI'):
+    if(selected == 'Get WQI'):
 
         col1, col2 = st.columns(2, gap = "large")
 

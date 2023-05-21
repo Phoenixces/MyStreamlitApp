@@ -24,6 +24,7 @@ classif_model = pickle.load(open('classi_model.sav', 'rb'))
 st.set_page_config(
     page_icon="💧",
     layout="wide",
+    page_title="Dashboard-ML"
     )
 
 

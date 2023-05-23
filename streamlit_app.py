@@ -47,9 +47,9 @@ valLen = len(data['values'])
 dataset = [data['values'][i]  for i in range(1, valLen, 1)]
 df = pd.DataFrame(dataset, columns= ['Date', 'Time', 'Temperature', 'TDS(ppm)', 'Turbidity', 'pH', 'PRESENT IN WATER(Y/N)', 'Latitude', 'Longitude'])
 
-df["Date"] = pd.to_datetime(df["Date"] + " " + df["Time"], format='%m/%d/%Y %H:%M:%S')
-df["Date"] = df['Date'].dt.date
-# df = df.sort_values('Date')
+# df["Date"] = pd.to_datetime(df["Date"] + " " + df["Time"], format='%m/%d/%Y %H:%M:%S')
+# df["Date"] = df['Date'].dt.date
+# # df = df.sort_values('Date')
 
 df ['pH'] = pd.to_numeric(df['pH'], errors='coerce')
 df ['TDS(ppm)'] = pd.to_numeric(df['TDS(ppm)'], errors='coerce')

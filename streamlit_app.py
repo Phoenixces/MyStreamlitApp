@@ -44,7 +44,7 @@ url = "https://sheets.googleapis.com/v4/spreadsheets/1lOf32JKNggS7cogzifAt--WAkP
 data = requests.get(url).json()
 valLen = len(data['values'])
 
-dataset = [data['values'][i]  for i in range(valLen - 90, valLen, 1)]
+dataset = [data['values'][i]  for i in range(1, valLen, 1)]
 df = pd.DataFrame(dataset, columns= ['Date', 'Time', 'Temperature', 'TDS(ppm)', 'Turbidity', 'pH', 'PRESENT IN WATER(Y/N)', 'Latitude', 'Longitude'])
 
 df["Date"] = pd.to_datetime(df["Date"] + " " + df["Time"], format='%m/%d/%Y %H:%M:%S')
@@ -96,7 +96,7 @@ with placeholder.container():
 
             try:
                 if st.button('Get WQI', 1):
-                    wqi = "Water Quality Index(WQI) for Real-time data is: " + str(regression_model.predict([[df['pH'].iloc[-1], df['TDS(ppm)'].iloc[-1], df['Turbidity'].iloc[-1] , df['Temperature'].iloc[-1]]])).replace(']', '').replace('[', '') + "\n" + "\nWater is " + str(classif_model.predict([[df['pH'].iloc[-1], df['TDS(ppm)'].iloc[-1], df['Turbidity'].iloc[-1] , df['Temperature'].iloc[-1]]])).replace(']', '').replace('[', '')
+                    wqi = "Water Quality Index(WQI) for Real-time data is: " + str(regression_model.predict([[df['pH'].iloc[-1], df['TDS(ppm)'].iloc[-1], df['Turbidity'].iloc[-1] , df['Temperature'].iloc[-1]]])).replace(']', '').replace('[', '') 
                 st.success(wqi)
             
             except ValueError as ve:
@@ -126,7 +126,7 @@ with placeholder.container():
 
                 #Creating a button for prediction
                 if st.button('Get WQI', 2):
-                    wqi = "Water Quality Index is: " + str(regression_model.predict([[float(ph), float(tds), float(turbidity), float(temperature)]])).replace(']', '').replace('[', '') + "\n" + "\nWater is" + str(classif_model.predict([[df['pH'].iloc[-1], df['TDS(ppm)'].iloc[-1], df['Turbidity'].iloc[-1] , df['Temperature'].iloc[-1]]])).replace(']', '').replace('[', '') 
+                    wqi = "Water Quality Index is: " + str(regression_model.predict([[float(ph), float(tds), float(turbidity), float(temperature)]])).replace(']', '').replace('[', '') 
                 st.success(wqi)
             
             except ValueError as ve:

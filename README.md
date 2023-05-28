@@ -1,9 +1,9 @@
 ## 😄Streamlit App for Machine Learning
 Built Using Python, Machine learning, streamlit.
-> Fetches Real time data from Sensors
-> Provides dashboard
-> Calulates WQI(Water Quality Index) for the sensor values
-> Classifies water quality in classes such as Excellent, Good, poor, very poor, unsuitable
+1. Fetches Real time data from Sensors
+2. Provides dashboard
+3. Calulates WQI(Water Quality Index) for the sensor values
+4. Classifies water quality in classes such as Excellent, Good, poor, very poor, unsuitable
 ---
 link to app: https://phoenixces-mystreamlitapp-streamlit-app-xcbo46.streamlit.app/
 ---
